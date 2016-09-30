@@ -161,7 +161,7 @@ class AppComponent extends React.Component {
 
 	}
   /*
-   *
+   * focus
    */
   focus(index){
     return function(){
