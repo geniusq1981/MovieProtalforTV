@@ -69,9 +69,12 @@ class ImgFigure extends React.Component {
 		let imgFigureClassName = "img-figure";
 		    imgFigureClassName += this.props.arrange.isFocused?' is-Focused ':'';
 
+    let imgClassName ="img-original";
+         imgClassName += this.props.arrange.isFocused?' img-focus':'';
+
 		return(
 			<figure className={imgFigureClassName} style={styleObj} onClick={this.handleClick} >
-			<img src = {this.props.data.imageURL}
+			<img className={imgClassName} src = {this.props.data.imageURL}
 				alt = {this.props.data.title}
 			/>
 			<figcaption>
@@ -89,11 +92,8 @@ class ControllerUnit extends React.Component {
 	}
 	handleClick(e){
 		// 如果点击的是当前正在选中态的按钮，则翻转图片，否则将对应的图片居中
-        if (this.props.arrange.isCenter) {
-            this.props.inverse();
-        } else {
-            this.props.center();
-        }
+
+            this.props.focus();
 		e.stopPropagation();
 		e.preventDefault();
 	}
@@ -166,6 +166,16 @@ class AppComponent extends React.Component {
   focus(index){
     return function(){
     let imgArrangeArr = this.state.imgArrangeArr;
+      console.log(this.state.imgArrangeArr[index].pos);
+      let documentDOM = document.body,
+        imgsecW = documentDOM.scrollWidth,
+        imgsecH = documentDOM.scrollWidth;
+      console.log(imgsecW);
+      if(this.state.imgArrangeArr[index].pos.left>imgsecW*0.9){
+        let stageDOM = ReactDOM.findDOMNode(this.refs.imgsec);
+          stageDOM.style.left = "-100px" ;
+
+      }
       for(let i=0;i<imgArrangeArr.length;i++){
 
         imgArrangeArr[i].isFocused = false;
@@ -244,7 +254,7 @@ class AppComponent extends React.Component {
 	    	  }
 	    	  imgArrangeArr[i] = {
 	    			  pos: {
-	    	    			  left: 245*index,
+	    	    			  left: 250*index,
 	    	    			  top: vTop
 	    	    	  },
 	    	    	  rotate:0,
@@ -315,7 +325,7 @@ class AppComponent extends React.Component {
 			 }
 		 }
 		 imgFigures.push(<ImgFigure key={index} data={value} ref={"imgFigure" + index} arrange={this.state.imgArrangeArr[index]} inverse={this.inverse(index)} focus={this.focus(index)}/>);
-		 controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgArrangeArr[index]} inverse={this.inverse(index)} />);
+		 controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgArrangeArr[index]} inverse={this.inverse(index)} focus={this.focus(index)}/>);
 	 }.bind(this));
     return (
      <section className="stage" ref="stage">
@@ -323,7 +333,7 @@ class AppComponent extends React.Component {
          <div className="logo"></div>
          <div className="clock"></div>
          </section>
-     <section className="img-sec">
+     <section className="img-sec" ref="imgsec">
      {imgFigures}
      </section>
      <nav className="controller-nav">
